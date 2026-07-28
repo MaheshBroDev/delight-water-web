@@ -205,6 +205,9 @@
 </head>
 <body>
 
+    <!-- Water Bubbles Background -->
+    <div class="bubbles-wrapper" aria-hidden="true" id="bubbles"></div>
+
     <!-- Header -->
     <header>
         <div class="main-header">
@@ -238,6 +241,7 @@
 
     <!-- Hero Section -->
     <section class="hero" id="home">
+        <div class="hero-wave" aria-hidden="true"></div>
         <div class="container">
             <div class="hero-content">
                 <h1>Expert Water Treatment <span class="gradient-text">Since 2008</span></h1>
@@ -891,6 +895,24 @@
                     answer.style.maxHeight = '0';
                 }
             });
+
+            // --- MIN-RESOURCE BUBBLES ---
+            (function createBubbles() {
+                var wrapper = document.getElementById('bubbles');
+                if (!wrapper) return;
+                var count = window.innerWidth < 768 ? 8 : 18;
+                for (var i = 0; i < count; i++) {
+                    var b = document.createElement('div');
+                    b.className = 'bubble';
+                    var size = 12 + Math.random() * 36;
+                    b.style.width = size + 'px';
+                    b.style.height = size + 'px';
+                    b.style.left = (5 + Math.random() * 90) + '%';
+                    b.style.animationDuration = (6 + Math.random() * 14) + 's';
+                    b.style.animationDelay = (Math.random() * 8) + 's';
+                    wrapper.appendChild(b);
+                }
+            })();
 
             // --- IMAGE LAZY LOAD HELPER ---
             document.querySelectorAll('.product-image img').forEach(function(img) {

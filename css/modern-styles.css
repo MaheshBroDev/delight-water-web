@@ -1290,6 +1290,76 @@ textarea.form-control {
     }
 }
 
+/* ============================
+   WATERY EFFECTS — Bubbles, Flow
+   Min-resource, responsive, CSS-only
+   ============================ */
+
+/* Floating bubbles container */
+.bubbles-wrapper {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -60px;
+    background: radial-gradient(circle at 35% 35%, rgba(0,210,255,0.45), rgba(0,210,255,0.15) 60%, transparent 70%);
+    border-radius: 50%;
+    animation: bubbleRise linear infinite;
+    opacity: 0.5;
+    will-change: transform;
+}
+
+@keyframes bubbleRise {
+    0% { transform: translateY(0) scale(1); opacity: 0.4; }
+    50% { opacity: 0.8; }
+    100% { transform: translateY(-110vh) scale(0.8); opacity: 0; }
+}
+
+/* Flowing water wave at bottom of hero */
+.hero-wave {
+    position: absolute;
+    bottom: 0; left: 0; width: 200%; height: 120px;
+    z-index: 2;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120'%3E%3Cpath fill='%2300D2FF' fill-opacity='0.15' d='M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z'%3E%3Canimate attributeName='d' dur='8s' repeatCount='indefinite' values='M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z; M0,50 C240,100 480,20 720,60 C960,100 1200,20 1440,50 L1440,120 L0,120 Z; M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z'/%3E%3C/path%3E%3C/svg%3E");
+    background-size: 50% 100%;
+    animation: flowWave 16s linear infinite;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+@keyframes flowWave {
+    0% { background-position: 0 0; }
+    100% { background-position: 1440px 0; }
+}
+
+/* Responsive bubbles */
+@media (max-width: 768px) {
+    .hero-wave { height: 80px; }
+}
+
+/* Ripple ring for cards on hover via pseudo */
+.service-card::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 0; height: 0;
+    border-radius: 50%;
+    background: rgba(0,210,255,0.15);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease, opacity 0.4s ease;
+    pointer-events: none;
+    opacity: 0;
+}
+.service-card:hover::after {
+    width: 200%; height: 200%;
+    opacity: 1;
+}
+
 /* Animation for menu toggle */
 .menu-toggle.active span:first-child {
     transform: rotate(45deg) translate(6px, 6px);
