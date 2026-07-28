@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Agent skill scaffolding (installed via `npx skills add`)
+.agents/
+.claude/
+agent/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.log
+
+# Build scratch & verification artefacts (screenshots, reports)
+.tmp/

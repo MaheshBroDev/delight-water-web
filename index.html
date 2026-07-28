@@ -10,7 +10,7 @@
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large">
     <meta name="geo.region" content="LK">
     <meta name="geo.placename" content="Galewela">
-    <meta name="theme-color" content="#0A0B0F">
+    <meta name="theme-color" content="#03070C">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="https://delightwatersolutions.com/">
@@ -39,11 +39,13 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png">
     <link rel="manifest" href="manifest.json">
 
-    <!-- Preload hero image for LCP improvement -->
-    <link rel="preload" as="image" href="assets/images/delight-water-logo-large.webp">
+    <!-- Preload the two faces used above the fold -->
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/instrument-serif-400.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/archivo-var.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="assets/fonts/jetbrains-mono-var.woff2" crossorigin>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/modern-styles.css">
+    <link rel="stylesheet" href="css/stage.css">
 
     <!-- JSON-LD Structured Data: LocalBusiness -->
     <script type="application/ld+json">
@@ -204,727 +206,637 @@
     </script>
 </head>
 <body>
+    <a class="skip" href="#main">Skip to content</a>
 
-    <!-- Water Bubbles Background -->
-    <div class="bubbles-wrapper" aria-hidden="true" id="bubbles"></div>
+    <!-- ======================================================================
+         THE STAGE — one persistent WebGL layer behind the entire document.
+         Sections own waypoints along a single camera path, so scrolling the
+         page is descending a treatment train. Degrades to the CSS field below.
+         ====================================================================== -->
+    <div id="stage-fallback" aria-hidden="true"></div>
+    <canvas id="stage" aria-hidden="true"></canvas>
 
     <!-- Header -->
-    <header>
-        <div class="main-header">
-            <div class="container">
-                <div class="logo">
-                    <a href="#home">
-                        <img src="assets/images/delight-water-logo-large.webp" alt="Delight Water Solutions (Pvt) Ltd — Water Treatment Company Sri Lanka" width="50" height="50">
-                        <span class="logo-text">Delight Water Solutions</span>
-                    </a>
-                </div>
-
-                <div class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-
-                <nav id="navMenu" aria-label="Main navigation">
-                    <ul>
-                        <li><a href="#home" class="active">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#products">Products</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#faq">FAQ</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </nav>
+    <header class="masthead">
+        <div class="shell">
+            <div class="brand">
+                <a href="#home" aria-label="Delight Water Solutions — home">
+                    <img src="assets/images/delight-water-logo-large.webp"
+                         alt="Delight Water Solutions (Pvt) Ltd — Water Treatment Company Sri Lanka"
+                         width="34" height="34">
+                </a>
+                <span class="brand-name">
+                    <b>Delight Water</b>
+                    <span>Solutions · Est. 2008</span>
+                </span>
             </div>
+
+            <button class="burger" id="burger" type="button"
+                    aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav">
+                <span></span><span></span><span></span>
+            </button>
+
+            <nav class="nav" id="nav" aria-label="Main navigation">
+                <ul>
+                    <li><a href="#home" class="active">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#products">Systems</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="tel:+94772666829" class="nav-cta">+94 77 266 6829</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-wave" aria-hidden="true"></div>
-        <div class="container">
-            <div class="hero-content">
-                <h1>Expert Water Treatment <span class="gradient-text">Since 2008</span></h1>
-                <p class="hero-description">
-                    Clean Water, Healthier Tomorrow. Transform your everyday water into refreshing, clean, and safe drinking water
-                    with our advanced purification systems. Serving Sri Lanka since 2008.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#products" class="btn btn-primary">Our Products</a>
-                    <a href="#contact" class="btn btn-outline">Get Free Consultation</a>
-                </div>
-            </div>
+    <main id="main" class="page">
 
-            <div class="hero-visual">
-                <img src="assets/images/ro-system-1.jpg" alt="Industrial RO Water Treatment System by Delight Water Solutions" width="400" height="400" loading="eager" class="hero-image-rounded">
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section class="section about" id="about">
-        <div class="container">
-            <h2 class="section-title">About <span class="gradient-text">Delight Water Solutions</span></h2>
-            <p class="section-subtitle">
-                We are here to serve our clients with the latest technology, user-friendly designs, and affordable solutions.
-                We specialize in complete water treatment systems for domestic, industrial, and international applications.
-            </p>
-
-            <div class="expertise-grid">
-                <div class="expertise-card">
-                    <div class="expertise-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="30" height="30">
-                            <path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/>
-                        </svg>
-                    </div>
-                    <div class="expertise-content">
-                        <h3>Complete Water Treatment</h3>
-                        <p>Comprehensive solutions including RO plants, nano RO systems, sea water RO plants, and domestic RO units designed with the latest technology and user-friendly designs.</p>
-                    </div>
-                </div>
-
-                <div class="expertise-card">
-                    <div class="expertise-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="30" height="30">
-                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,19C8.13,19 5,15.87 5,12C5,8.13 8.13,5 12,5C15.87,5 19,8.13 19,12C5,15.87 15.87,19 12,19M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/>
-                        </svg>
-                    </div>
-                    <div class="expertise-content">
-                        <h3>Advanced Filtration Systems</h3>
-                        <p>Multi-stage filtration with sand media, activated carbon, DM/DI plants, water softener systems, iron removal media filters, and specialized glass media filters.</p>
-                    </div>
-                </div>
-
-                <div class="expertise-card">
-                    <div class="expertise-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="30" height="30">
-                            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-                        </svg>
-                    </div>
-                    <div class="expertise-content">
-                        <h3>Quality Chemicals &amp; Equipment</h3>
-                        <p>Professional-grade chemicals including anti-scalants, SMBS, CIP chemicals, and essential equipment like RO feed pumps, pressure gauges, flow meters, and membrane systems.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="section company-info">
-        <div class="container">
-            <div class="company-stats">
-                <div class="stat-card">
-                    <div class="stat-number">15+</div>
-                    <div class="stat-label">Years Experience</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">500+</div>
-                    <div class="stat-label">Happy Clients</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Quality Assured</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Support</div>
-                </div>
-            </div>
-
-            <div class="company-mission">
-                <h2 class="section-title">Our <span class="gradient-text">Mission</span></h2>
-                <p class="mission-text">
-                    With the support of well-trained technical staff and reliable suppliers, we offer customized solutions
-                    that meet all local and international certification standards. From domestic RO units to large-scale
-                    industrial systems, we ensure pure water for every need.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Products Showcase Section -->
-    <section class="section products-showcase" id="products">
-        <div class="container">
-            <h2 class="section-title">Our Advanced <span class="gradient-text">Water Treatment Systems</span></h2>
-            <p class="section-subtitle">
-                State-of-the-art industrial RO systems and water treatment solutions designed for maximum efficiency and reliability.
-            </p>
-
-            <!-- Featured Products Gallery -->
-            <div class="products-gallery">
-                <div class="product-showcase-card main-product">
-                    <div class="product-image">
-                        <img src="assets/images/ro-system-1.jpg" alt="Industrial RO Water Treatment System — heavy-duty reverse osmosis for industrial applications" loading="lazy">
-                        <div class="product-badge">Featured</div>
-                        <div class="product-overlay">
-                            <div class="product-info">
-                                <h3>Industrial RO System</h3>
-                                <p>Heavy-duty reverse osmosis system for industrial applications with advanced multi-stage filtration and high-capacity water processing.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-showcase-card">
-                    <div class="product-image">
-                        <img src="assets/images/ro-system-2.jpg" alt="Commercial Water Purification System — compact RO plant for commercial use" loading="lazy">
-                        <div class="product-badge">Popular</div>
-                        <div class="product-overlay">
-                            <div class="product-info">
-                                <h3>Commercial RO Plant</h3>
-                                <p>Compact and efficient water treatment solution for commercial and institutional use with automated controls.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-showcase-card">
-                    <div class="product-image">
-                        <img src="assets/images/industrial-ro-water-filter-500x500.webp" alt="Industrial RO Water Filter — high-performance reverse osmosis filter system" loading="lazy">
-                        <div class="product-badge">Professional</div>
-                        <div class="product-overlay">
-                            <div class="product-info">
-                                <h3>Industrial Water Filter</h3>
-                                <p>High-performance industrial reverse osmosis filter system designed for large-scale water purification needs.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-features">
-                    <div class="feature-highlight">
-                        <div class="feature-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="28" height="28">
-                                <path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/>
-                            </svg>
-                        </div>
-                        <h4>99.9% Purity</h4>
-                        <p>Advanced filtration technology ensures exceptional water quality</p>
+        <!-- ============================== HERO ============================== -->
+        <section class="hero" id="home" data-stage="home">
+            <div class="shell">
+                <div class="hero-grid">
+                    <div class="hero-head">
+                        <p class="marker fade-up" style="--i:0">
+                            <span class="idx">01</span> Feed &rarr; Permeate
+                        </p>
+                        <h1 class="display">
+                            <span class="line"><span style="--i:0">Water,</span></span>
+                            <span class="line"><span style="--i:1">separated</span></span>
+                            <span class="line"><span style="--i:2"><em>honestly.</em></span></span>
+                        </h1>
                     </div>
 
-                    <div class="feature-highlight">
-                        <div class="feature-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="28" height="28">
-                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
-                            </svg>
-                        </div>
-                        <h4>Energy Efficient</h4>
-                        <p>Optimized power consumption with intelligent monitoring systems</p>
-                    </div>
-
-                    <div class="feature-highlight">
-                        <div class="feature-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="28" height="28">
-                                <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V17A1,1 0 0,1 22,18H21A7,7 0 0,1 14,25H10A7,7 0 0,1 3,18H2A1,1 0 0,1 1,17V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2Z"/>
-                            </svg>
-                        </div>
-                        <h4>Low Maintenance</h4>
-                        <p>Designed for long-term reliability with minimal maintenance requirements</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Product Grid -->
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="assets/images/domestic-ro-plant-500x500.webp" alt="Domestic RO Plant — home water purifier for residential use in Sri Lanka" loading="lazy">
-                    </div>
-                    <div class="product-content">
-                        <h3>Domestic RO Plant</h3>
-                        <p>Perfect for residential use, our domestic RO systems provide clean, safe drinking water for your family with compact design and easy maintenance.</p>
-                        <div class="product-specs">
-                            <span class="spec-tag">Home Use</span>
-                            <span class="spec-tag">5-10 LPH</span>
-                            <span class="spec-tag">UV Protected</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="assets/images/domestic-reverse-osmosis-system_03.webp" alt="Reverse Osmosis System — multi-stage RO with pre and post filtration" loading="lazy">
-                    </div>
-                    <div class="product-content">
-                        <h3>Advanced RO System</h3>
-                        <p>Multi-stage reverse osmosis system with advanced pre and post filtration for superior water quality and taste enhancement.</p>
-                        <div class="product-specs">
-                            <span class="spec-tag">Multi-Stage</span>
-                            <span class="spec-tag">TDS Control</span>
-                            <span class="spec-tag">Mineral Enhancement</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="assets/images/equipments-products.webp" alt="Water Treatment Equipment — complete range of pumps, filters and monitoring systems" loading="lazy">
-                    </div>
-                    <div class="product-content">
-                        <h3>Treatment Equipment</h3>
-                        <p>Complete range of water treatment equipment and accessories including pumps, filters, and monitoring systems for comprehensive solutions.</p>
-                        <div class="product-specs">
-                            <span class="spec-tag">Complete Range</span>
-                            <span class="spec-tag">Professional Grade</span>
-                            <span class="spec-tag">Warranty</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Call to Action Section -->
-            <div class="products-cta">
-                <h3>Ready to Transform Your Water Quality?</h3>
-                <p>
-                    Discover how our advanced water treatment solutions can meet your specific needs.
-                    From residential to industrial applications, we have the perfect system for you.
-                </p>
-                <div class="cta-buttons">
-                    <a href="#contact" class="cta-btn primary" aria-label="Get free consultation for water treatment">
-                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                            <path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/>
-                        </svg>
-                        Get Free Consultation
-                    </a>
-                    <a href="tel:+94772666829" class="cta-btn secondary">
-                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                            <path d="M20,4H4A2,2 0 0,0 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6A2,2 0 0,0 20,4M20,18H4V8L12,13L20,8V18M20,6L12,11L4,6V6H20V6Z"/>
-                        </svg>
-                        Call Now: +94 77 266 6829
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="section services" id="services">
-        <div class="container">
-            <h2 class="section-title">Our <span class="gradient-text">Services</span></h2>
-            <p class="section-subtitle">
-                Advanced water purification technologies that deliver exceptionally clean, safe, and great-tasting water.
-                Our state-of-the-art filtration systems remove contaminants, impurities, and harmful substances while preserving essential minerals.
-            </p>
-
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="40" height="40">
-                            <path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/>
-                        </svg>
-                    </div>
-                    <h3>Advanced Water Purification</h3>
-                    <p>Cutting-edge purification technologies that ensure the highest quality drinking water for residential and commercial applications, including multi-stage filtration, reverse osmosis, and UV sterilization.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="40" height="40">
-                            <path d="M19,3A2,2 0 0,1 21,5V19A2,2 0 0,1 19,21H5A2,2 0 0,1 3,19V5A2,2 0 0,1 5,3H19M18.5,18.5V13.2A3.26,3.26 0 0,0 15.24,9.94C14.39,9.94 13.4,10.46 12.92,11.24V10.13H10.13V18.5H12.92V13.57C12.92,12.8 13.54,12.17 14.31,12.17A1.4,1.4 0 0,1 15.71,13.57V18.5H18.5M6.88,8.56A1.68,1.68 0 0,0 8.56,6.88C8.56,5.95 7.81,5.19 6.88,5.19A1.69,1.69 0 0,0 5.19,6.88C5.19,7.81 5.95,8.56 6.88,8.56M8.27,18.5V10.13H5.5V18.5H8.27Z"/>
-                        </svg>
-                    </div>
-                    <h3>Wastewater Management</h3>
-                    <p>Complementary wastewater treatment systems that help maintain environmental sustainability while focusing on our core mission of providing pure water solutions.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="40" height="40">
-                            <path d="M12,2A2,2 0 0,1 14,4C14,4.74 13.6,5.39 13,5.73V7H14A7,7 0 0,1 21,14H22A1,1 0 0,1 23,15V17A1,1 0 0,1 22,18H21A7,7 0 0,1 14,25H10A7,7 0 0,1 3,18H2A1,1 0 0,1 1,17V15A1,1 0 0,1 2,14H3A7,7 0 0,1 10,7H11V5.73C10.4,5.39 10,4.74 10,4A2,2 0 0,1 12,2Z"/>
-                        </svg>
-                    </div>
-                    <h3>Professional Installation</h3>
-                    <p>Professional installation of water treatment systems with expert guidance. Our experienced technicians ensure proper setup and optimal performance of your water purification system.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="40" height="40">
-                            <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/>
-                        </svg>
-                    </div>
-                    <h3>Maintenance &amp; Support</h3>
-                    <p>Regular maintenance and servicing to ensure optimal system performance. Our 24/7 technical support team is dedicated to keeping your water treatment systems running efficiently.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="40" height="40">
-                            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
-                        </svg>
-                    </div>
-                    <h3>System Upgrades</h3>
-                    <p>System upgrades and improvements to meet changing requirements. We help you enhance your existing water treatment systems with the latest technology and features.</p>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="40" height="40">
-                            <path d="M12,15A2,2 0 0,1 14,17A2,2 0 0,1 12,19A2,2 0 0,1 10,17A2,2 0 0,1 12,15M7.5,13L10,10.5L9,9.5L6.5,12L7.5,13M12.5,13L15,10.5L14,9.5L11.5,12L12.5,13M17.5,13L20,10.5L19,9.5L16.5,12L17.5,13M12,2L13.09,8.26L22,9L17.22,13.78L18.18,22.69L12,19.27L5.82,22.69L6.78,13.78L2,9L10.91,8.26L12,2Z"/>
-                        </svg>
-                    </div>
-                    <h3>Customer Support</h3>
-                    <p>Years of expertise in water treatment solutions with dedicated commitment to customer satisfaction. Experience the crystal clear difference with our comprehensive support services.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section (AEO-critical) -->
-    <section class="section faq-section" id="faq">
-        <div class="container">
-            <h2 class="section-title">Frequently Asked <span class="gradient-text">Questions</span></h2>
-            <p class="section-subtitle">
-                Quick answers to common questions about our water treatment systems, services, and support.
-            </p>
-
-            <div class="faq-grid">
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">
-                        <span>What types of water treatment systems do you offer?</span>
-                        <span class="faq-icon" aria-hidden="true">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>We offer domestic RO plants, industrial RO systems, commercial water purification units, sea water RO plants, nano RO systems, DM/DI plants, water softeners, iron removal media filters, and glass media filters.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">
-                        <span>Where are you located in Sri Lanka?</span>
-                        <span class="faq-icon" aria-hidden="true">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>We are located at No 131/C, Aluthwewa, Bambaragaswewa, Galewela, Sri Lanka.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">
-                        <span>Do you provide professional installation?</span>
-                        <span class="faq-icon" aria-hidden="true">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Yes, we provide professional installation of all water treatment systems with expert guidance. Our experienced technicians ensure proper setup and optimal performance of your system.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">
-                        <span>What maintenance and support do you offer?</span>
-                        <span class="faq-icon" aria-hidden="true">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>We offer regular maintenance and servicing to ensure optimal system performance, plus 24/7 technical support to keep your water treatment systems running efficiently.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">
-                        <span>Do you serve international clients?</span>
-                        <span class="faq-icon" aria-hidden="true">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>Yes, we specialize in water treatment systems for domestic, industrial, and international applications, meeting local and international certification standards.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <button class="faq-question" aria-expanded="false">
-                        <span>How can I get a free consultation?</span>
-                        <span class="faq-icon" aria-hidden="true">+</span>
-                    </button>
-                    <div class="faq-answer">
-                        <p>You can call us at <a href="tel:+94772666829">+94 77 266 6829</a>, email <a href="mailto:contact@delightwatersolutions.com">contact@delightwatersolutions.com</a>, or use the contact form on this page. We offer free consultations for all clients.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="section contact" id="contact">
-        <div class="container">
-            <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
-            <p class="section-subtitle">
-                Ready to transform your water quality? Contact our experts for a consultation
-                and discover the perfect solution for your needs.
-            </p>
-
-            <div class="contact-container">
-                <div class="contact-info">
-                    <div class="contact-detail">
-                        <div class="contact-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="24" height="24">
-                                <path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/>
-                            </svg>
-                        </div>
+                    <div class="hero-sub">
                         <div>
-                            <h3>Phone</h3>
-                            <p>
-                                <a href="tel:+94772666829" aria-label="Call hotline +94 77 266 6829">Hotline: +94 77 266 6829</a><br>
-                                <a href="tel:+94777822332" aria-label="Call maintenance +94 77 782 2332">Maintenance: +94 77 782 2332</a>
+                            <p class="lede fade-up" style="--i:1">
+                                Sri Lanka&rsquo;s water treatment specialists since 2008. Reverse osmosis plants,
+                                industrial filtration and domestic purifiers &mdash; engineered, installed and
+                                supported by people who have spent seventeen years on exactly this problem.
                             </p>
+                            <div class="hero-actions fade-up" style="--i:2">
+                                <a href="#products" class="btn btn-solid">
+                                    <span class="btn-label">Explore systems</span>
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/></svg>
+                                </a>
+                                <a href="#contact" class="btn btn-ghost">
+                                    <span class="btn-label">Free consultation</span>
+                                </a>
+                            </div>
                         </div>
+
+                        <!-- The stage reporting on itself. -->
+                        <aside class="readout fade-up" style="--i:3" aria-label="System status">
+                            <div class="readout-title"><span class="pip"></span> Live · RO train</div>
+                            <dl>
+                                <dt>Recovery</dt><dd>62&nbsp;%</dd>
+                                <dt>Permeate TDS</dt><dd>&lt;&nbsp;20&nbsp;ppm</dd>
+                                <dt>Rejection</dt><dd>99.9&nbsp;%</dd>
+                                <dt>Render tier</dt><dd id="readout-tier">CSS</dd>
+                            </dl>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll-cue" aria-hidden="true">
+                <span class="rail"></span> Scroll
+            </div>
+        </section>
+
+        <!-- ============================== ABOUT ============================= -->
+        <section class="band" id="about" data-stage="about">
+            <div class="shell">
+                <div class="split">
+                    <div class="split-head" data-reveal>
+                        <p class="marker"><span class="idx">02</span> Capability</p>
+                        <h2 class="display">Complete treatment, <em>end to end</em></h2>
+                        <p class="lede" style="margin-top:1.5rem">
+                            We serve clients with the latest technology, user-friendly designs and
+                            affordable solutions &mdash; complete water treatment systems for domestic,
+                            industrial and international applications.
+                        </p>
                     </div>
 
-                    <div class="contact-detail">
-                        <div class="contact-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="24" height="24">
-                                <path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/>
-                            </svg>
+                    <div class="stack">
+                        <article class="stack-row" data-reveal style="--d:60ms">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Complete water treatment</h3>
+                                <p>RO plants, nano RO systems, sea water RO plants and domestic RO units &mdash;
+                                   designed with the latest technology and user-friendly controls.</p>
+                            </div>
+                        </article>
+
+                        <article class="stack-row" data-reveal style="--d:140ms">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Advanced filtration</h3>
+                                <p>Multi-stage filtration with sand media, activated carbon, DM/DI plants,
+                                   softeners, iron removal media and specialised glass media filters.</p>
+                            </div>
+                        </article>
+
+                        <article class="stack-row" data-reveal style="--d:220ms">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Chemicals &amp; equipment</h3>
+                                <p>Professional-grade anti-scalants, SMBS and CIP chemicals, plus RO feed pumps,
+                                   pressure gauges, flow meters and membrane systems.</p>
+                            </div>
+                        </article>
+
+                        <article class="stack-row" data-reveal style="--d:300ms">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12,1L3,5V11C3,16.55 6.84,21.74 12,23C17.16,21.74 21,16.55 21,11V5L12,1M12,7C13.4,7 14.8,8.1 14.8,9.5V11H15.5A1.5,1.5 0 0,1 17,12.5V16.5A1.5,1.5 0 0,1 15.5,18H8.5A1.5,1.5 0 0,1 7,16.5V12.5A1.5,1.5 0 0,1 8.5,11H9.2V9.5C9.2,8.1 10.6,7 12,7M12,8.2C11.2,8.2 10.5,8.7 10.5,9.5V11H13.5V9.5C13.5,8.7 12.8,8.2 12,8.2Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Certified to standard</h3>
+                                <p>Customised solutions meeting local and international certification standards,
+                                   backed by well-trained technical staff and reliable suppliers.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================= METRICS ============================ -->
+        <section class="band" data-stage="metrics" aria-label="Company at a glance">
+            <div class="shell">
+                <div class="metrics" data-reveal>
+                    <div class="metric">
+                        <div class="val"><span data-count="17" data-suffix="+">17+</span></div>
+                        <div class="key">Years in service</div>
+                    </div>
+                    <div class="metric">
+                        <div class="val"><span data-count="500" data-suffix="+">500+</span></div>
+                        <div class="key">Systems delivered</div>
+                    </div>
+                    <div class="metric">
+                        <div class="val"><span data-count="100" data-suffix="%">100%</span></div>
+                        <div class="key">Quality assured</div>
+                    </div>
+                    <div class="metric">
+                        <div class="val">24/7</div>
+                        <div class="key">Technical support</div>
+                    </div>
+                </div>
+
+                <div class="split" style="margin-top:clamp(3rem,6vw,5rem)">
+                    <div class="split-head" data-reveal>
+                        <p class="marker"><span class="idx">03</span> Mission</p>
+                    </div>
+                    <div data-reveal style="--d:100ms">
+                        <p class="lede" style="font-size:clamp(1.2rem,1rem+1vw,1.75rem);color:var(--ink)">
+                            With well-trained technical staff and reliable suppliers, we deliver customised
+                            solutions that meet every local and international certification standard &mdash;
+                            from a single domestic RO unit to a full industrial train. Pure water, for every need.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================ PRODUCTS ============================ -->
+        <section class="band" id="products" data-stage="products">
+            <div class="shell">
+                <div class="product-lede">
+                    <div data-reveal>
+                        <p class="marker"><span class="idx">04</span> Systems</p>
+                        <h2 class="display">Built for <em>pressure</em></h2>
+                    </div>
+                    <p class="lede" data-reveal style="--d:80ms">
+                        State-of-the-art industrial RO systems and water treatment solutions,
+                        specified for maximum efficiency and long service life.
+                    </p>
+                </div>
+
+                <div class="rack">
+                    <article class="unit wide" data-reveal>
+                        <div class="unit-media">
+                            <span class="tag">Featured</span>
+                            <img src="assets/images/ro-system-1.jpg"
+                                 alt="Industrial RO Water Treatment System — heavy-duty reverse osmosis for industrial applications"
+                                 loading="lazy" decoding="async" width="800" height="450">
                         </div>
-                        <div>
-                            <h3>Email</h3>
-                            <p>
+                        <div class="unit-body">
+                            <h3>Industrial RO system</h3>
+                            <p>Heavy-duty reverse osmosis for industrial applications, with advanced
+                               multi-stage filtration and high-capacity processing.</p>
+                            <div class="specs">
+                                <span>High capacity</span><span>Multi-stage</span><span>Automated</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="unit" data-reveal style="--d:90ms">
+                        <div class="unit-media">
+                            <span class="tag">Popular</span>
+                            <img src="assets/images/ro-system-2.jpg"
+                                 alt="Commercial Water Purification System — compact RO plant for commercial use"
+                                 loading="lazy" decoding="async" width="600" height="450">
+                        </div>
+                        <div class="unit-body">
+                            <h3>Commercial RO plant</h3>
+                            <p>Compact, efficient treatment for commercial and institutional sites,
+                               with automated controls.</p>
+                            <div class="specs">
+                                <span>Commercial</span><span>Auto controls</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="unit" data-reveal style="--d:60ms">
+                        <div class="unit-media">
+                            <span class="tag">Professional</span>
+                            <img src="assets/images/industrial-ro-water-filter-500x500.webp"
+                                 alt="Industrial RO Water Filter — high-performance reverse osmosis filter system"
+                                 loading="lazy" decoding="async" width="600" height="450">
+                        </div>
+                        <div class="unit-body">
+                            <h3>Industrial water filter</h3>
+                            <p>High-performance filtration for large-scale purification duty.</p>
+                            <div class="specs">
+                                <span>Large scale</span><span>Heavy duty</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="unit" data-reveal style="--d:120ms">
+                        <div class="unit-media">
+                            <span class="tag">Domestic</span>
+                            <img src="assets/images/domestic-ro-plant-500x500.webp"
+                                 alt="Domestic RO Plant — home water purifier for residential use in Sri Lanka"
+                                 loading="lazy" decoding="async" width="600" height="450">
+                        </div>
+                        <div class="unit-body">
+                            <h3>Domestic RO plant</h3>
+                            <p>Clean, safe drinking water for the family &mdash; compact and easy to maintain.</p>
+                            <div class="specs">
+                                <span>Home use</span><span>5&ndash;10 LPH</span><span>UV protected</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="unit" data-reveal style="--d:180ms">
+                        <div class="unit-media">
+                            <span class="tag">Advanced</span>
+                            <img src="assets/images/domestic-reverse-osmosis-system_03.webp"
+                                 alt="Reverse Osmosis System — multi-stage RO with pre and post filtration"
+                                 loading="lazy" decoding="async" width="600" height="450">
+                        </div>
+                        <div class="unit-body">
+                            <h3>Advanced RO system</h3>
+                            <p>Multi-stage RO with pre- and post-filtration for superior quality and taste.</p>
+                            <div class="specs">
+                                <span>Multi-stage</span><span>TDS control</span><span>Mineral</span>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="unit" data-reveal style="--d:240ms">
+                        <div class="unit-media">
+                            <span class="tag">Equipment</span>
+                            <img src="assets/images/equipments-products.webp"
+                                 alt="Water Treatment Equipment — complete range of pumps, filters and monitoring systems"
+                                 loading="lazy" decoding="async" width="600" height="450">
+                        </div>
+                        <div class="unit-body">
+                            <h3>Treatment equipment</h3>
+                            <p>Pumps, filters, membranes and monitoring &mdash; the complete supporting range.</p>
+                            <div class="specs">
+                                <span>Full range</span><span>Warranty</span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="caps" data-reveal>
+                    <div class="cap">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,20A6,6 0 0,1 6,14C6,10 12,3.25 12,3.25C12,3.25 18,10 18,14A6,6 0 0,1 12,20Z"/></svg>
+                        <b>99.9% purity</b>
+                        <p>Advanced filtration delivering exceptional, consistently measured water quality.</p>
+                    </div>
+                    <div class="cap">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M11,16.5L6.5,12L7.91,10.59L11,13.67L16.59,8.09L18,9.5L11,16.5Z"/></svg>
+                        <b>Energy efficient</b>
+                        <p>Optimised power consumption with intelligent monitoring and recovery control.</p>
+                    </div>
+                    <div class="cap">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/></svg>
+                        <b>Low maintenance</b>
+                        <p>Engineered for long-term reliability with minimal intervention and easy servicing.</p>
+                    </div>
+                </div>
+
+                <div class="hero-actions" data-reveal style="justify-content:center;margin-top:2.5rem">
+                    <a href="#contact" class="btn btn-solid">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
+                        <span class="btn-label">Get free consultation</span>
+                    </a>
+                    <a href="tel:+94772666829" class="btn btn-ghost">
+                        <span class="btn-label">Call +94 77 266 6829</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================ SERVICES ============================ -->
+        <section class="band" id="services" data-stage="services">
+            <div class="shell">
+                <div class="split">
+                    <div class="split-head" data-reveal>
+                        <p class="marker"><span class="idx">05</span> Services</p>
+                        <h2 class="display">From specification to <em>the tenth year</em></h2>
+                        <p class="lede" style="margin-top:1.5rem">
+                            Purification technologies that remove contaminants and harmful substances
+                            while preserving the minerals that make water worth drinking.
+                        </p>
+                    </div>
+
+                    <div class="index-list">
+                        <article class="index-row" data-reveal>
+                            <span class="num">S/01</span>
+                            <div>
+                                <h3>Advanced water purification</h3>
+                                <p>Multi-stage filtration, reverse osmosis and UV sterilisation for residential
+                                   and commercial applications, specified to the water you actually have.</p>
+                            </div>
+                        </article>
+                        <article class="index-row" data-reveal style="--d:70ms">
+                            <span class="num">S/02</span>
+                            <div>
+                                <h3>Wastewater management</h3>
+                                <p>Complementary treatment systems that maintain environmental compliance
+                                   alongside the core purification train.</p>
+                            </div>
+                        </article>
+                        <article class="index-row" data-reveal style="--d:140ms">
+                            <span class="num">S/03</span>
+                            <div>
+                                <h3>Professional installation</h3>
+                                <p>Experienced technicians handling setup and commissioning, so the system
+                                   performs to its design figures from day one.</p>
+                            </div>
+                        </article>
+                        <article class="index-row" data-reveal style="--d:210ms">
+                            <span class="num">S/04</span>
+                            <div>
+                                <h3>Maintenance &amp; support</h3>
+                                <p>Scheduled servicing to hold optimal performance, with 24/7 technical support
+                                   keeping your systems running.</p>
+                            </div>
+                        </article>
+                        <article class="index-row" data-reveal style="--d:280ms">
+                            <span class="num">S/05</span>
+                            <div>
+                                <h3>System upgrades</h3>
+                                <p>Enhancements to existing installations as requirements change &mdash; capacity,
+                                   automation and monitoring.</p>
+                            </div>
+                        </article>
+                        <article class="index-row" data-reveal style="--d:350ms">
+                            <span class="num">S/06</span>
+                            <div>
+                                <h3>Customer support</h3>
+                                <p>Seventeen years of water treatment expertise, with a dedicated commitment
+                                   to the people who rely on these systems daily.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== FAQ =============================== -->
+        <section class="band" id="faq" data-stage="faq">
+            <div class="shell">
+                <div data-reveal style="margin-bottom:2.5rem">
+                    <p class="marker"><span class="idx">06</span> Questions</p>
+                    <h2 class="display">Answers, <em>plainly</em></h2>
+                </div>
+
+                <div class="faq" data-reveal style="--d:80ms">
+                    <div class="qa">
+                        <button class="qa-q" type="button" aria-expanded="false">
+                            <span>What types of water treatment systems do you offer?</span>
+                            <span class="qa-sign" aria-hidden="true"></span>
+                        </button>
+                        <div class="qa-a"><div>
+                            <p>Domestic RO plants, industrial RO systems, commercial purification units,
+                               sea water RO plants, nano RO systems, DM/DI plants, water softeners,
+                               iron removal media filters and glass media filters.</p>
+                        </div></div>
+                    </div>
+
+                    <div class="qa">
+                        <button class="qa-q" type="button" aria-expanded="false">
+                            <span>Where are you located in Sri Lanka?</span>
+                            <span class="qa-sign" aria-hidden="true"></span>
+                        </button>
+                        <div class="qa-a"><div>
+                            <p>No 131/C, Aluthwewa, Bambaragaswewa, Galewela, Sri Lanka.</p>
+                        </div></div>
+                    </div>
+
+                    <div class="qa">
+                        <button class="qa-q" type="button" aria-expanded="false">
+                            <span>Do you provide professional installation?</span>
+                            <span class="qa-sign" aria-hidden="true"></span>
+                        </button>
+                        <div class="qa-a"><div>
+                            <p>Yes. We install all water treatment systems with expert guidance, and our
+                               experienced technicians ensure proper setup and optimal performance.</p>
+                        </div></div>
+                    </div>
+
+                    <div class="qa">
+                        <button class="qa-q" type="button" aria-expanded="false">
+                            <span>What maintenance and support do you offer?</span>
+                            <span class="qa-sign" aria-hidden="true"></span>
+                        </button>
+                        <div class="qa-a"><div>
+                            <p>Regular maintenance and servicing to keep performance at design figures,
+                               plus 24/7 technical support.</p>
+                        </div></div>
+                    </div>
+
+                    <div class="qa">
+                        <button class="qa-q" type="button" aria-expanded="false">
+                            <span>Do you serve international clients?</span>
+                            <span class="qa-sign" aria-hidden="true"></span>
+                        </button>
+                        <div class="qa-a"><div>
+                            <p>Yes. We specialise in systems for domestic, industrial and international
+                               applications, meeting local and international certification standards.</p>
+                        </div></div>
+                    </div>
+
+                    <div class="qa">
+                        <button class="qa-q" type="button" aria-expanded="false">
+                            <span>What chemicals and spares do you supply?</span>
+                            <span class="qa-sign" aria-hidden="true"></span>
+                        </button>
+                        <div class="qa-a"><div>
+                            <p>Professional-grade anti-scalants, SMBS and CIP chemicals, plus RO feed pumps,
+                               pressure gauges, flow meters and membrane systems.</p>
+                        </div></div>
+                    </div>
+
+                    <div class="qa">
+                        <button class="qa-q" type="button" aria-expanded="false">
+                            <span>How can I get a free consultation?</span>
+                            <span class="qa-sign" aria-hidden="true"></span>
+                        </button>
+                        <div class="qa-a"><div>
+                            <p>Call <a href="tel:+94772666829">+94 77 266 6829</a>, email
+                               <a href="mailto:contact@delightwatersolutions.com">contact@delightwatersolutions.com</a>,
+                               or use the form below. Consultations are free.</p>
+                        </div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================= CONTACT ============================ -->
+        <section class="band" id="contact" data-stage="contact">
+            <div class="shell">
+                <div data-reveal style="margin-bottom:2.5rem">
+                    <p class="marker"><span class="idx">07</span> Contact</p>
+                    <h2 class="display">Tell us about <em>your water</em></h2>
+                </div>
+
+                <div class="contact-grid">
+                    <div class="channels" data-reveal>
+                        <div class="channel">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Phone</h3>
+                                <a href="tel:+94772666829" aria-label="Call hotline +94 77 266 6829">Hotline &middot; +94 77 266 6829</a><br>
+                                <a href="tel:+94777822332" aria-label="Call maintenance +94 77 782 2332">Maintenance &middot; +94 77 782 2332</a>
+                            </div>
+                        </div>
+
+                        <div class="channel">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Email</h3>
                                 <a href="mailto:contact@delightwatersolutions.com">contact@delightwatersolutions.com</a>
-                            </p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="contact-detail">
-                        <div class="contact-icon" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" width="24" height="24">
-                                <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3>Location</h3>
-                            <p>
-                                <a href="https://maps.google.com/?q=No+126+Sanasa+Ideal+Colombo+Road+Gampaha+Sri+Lanka" target="_blank" rel="noopener">
+                        <div class="channel">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Works</h3>
+                                <a href="https://maps.google.com/?q=Aluthwewa+Bambaragaswewa+Galewela+Sri+Lanka"
+                                   target="_blank" rel="noopener">
                                     No 131/C, Aluthwewa,<br>Bambaragaswewa, Galewela, Sri Lanka
                                 </a>
-                            </p>
+                            </div>
+                        </div>
+
+                        <div class="channel">
+                            <span class="glyph" aria-hidden="true">
+                                <svg viewBox="0 0 24 24"><path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22C6.47,22 2,17.5 2,12A10,10 0 0,1 12,2M12.5,7V12.25L17,14.92L16.25,16.15L11,13V7H12.5Z"/></svg>
+                            </span>
+                            <div>
+                                <h3>Hours</h3>
+                                <p>Mon&ndash;Sat &middot; 08:00&ndash;18:00<br>Emergency support 24/7</p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="contact-form">
-                    <form id="contactForm" action="https://formspree.io/f/xbjpnaww" method="POST">
-                        <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter your phone number">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" class="form-control" placeholder="Tell us about your water needs..." required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary" id="contactFormButton">Send Message</button>
-                        <p id="contactFormStatus" style="margin-top: 1rem; font-weight: 500; text-align: center;"></p>
-                    </form>
+                    <div class="form-panel" data-reveal style="--d:100ms">
+                        <form id="contactForm" action="https://formspree.io/f/xbjpnaww" method="POST">
+                            <div class="field">
+                                <label for="name">Full name</label>
+                                <input type="text" id="name" name="name" placeholder="Your name" required>
+                            </div>
+                            <div class="field">
+                                <label for="email">Email address</label>
+                                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="field">
+                                <label for="phone">Phone number</label>
+                                <input type="tel" id="phone" name="phone" placeholder="+94 …">
+                            </div>
+                            <div class="field">
+                                <label for="message">What do you need?</label>
+                                <textarea id="message" name="message"
+                                          placeholder="Source water, daily volume, site type…" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-solid">
+                                <span class="btn-label">Send enquiry</span>
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/></svg>
+                            </button>
+                            <p id="formStatus" role="status" aria-live="polite"></p>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Footer -->
+    <!-- ============================== FOOTER ============================== -->
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
+        <div class="shell">
+            <div class="footer-grid">
                 <div class="footer-brand">
-                    <img src="assets/images/delight-water-logo-large.webp" alt="Delight Water Solutions (Pvt) Ltd" width="60" height="60" loading="lazy">
-                    <p>Clean Water, Healthier Tomorrow — since 2008.</p>
+                    <div class="brand">
+                        <img src="assets/images/delight-water-logo-large.webp"
+                             alt="Delight Water Solutions (Pvt) Ltd" width="34" height="34" loading="lazy">
+                        <span class="brand-name">
+                            <b>Delight Water</b>
+                            <span>Solutions · Est. 2008</span>
+                        </span>
+                    </div>
+                    <p>Clean water, healthier tomorrow. Complete treatment systems for domestic,
+                       industrial and international applications across Sri Lanka.</p>
                 </div>
-                <div class="footer-links">
-                    <h3>Quick Links</h3>
+
+                <div>
+                    <h4>Navigate</h4>
                     <ul>
                         <li><a href="#home">Home</a></li>
                         <li><a href="#about">About</a></li>
-                        <li><a href="#products">Products</a></li>
+                        <li><a href="#products">Systems</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#faq">FAQ</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
-                <div class="footer-contact">
-                    <h3>Contact</h3>
-                    <p>
-                        <a href="tel:+94772666829">+94 77 266 6829</a><br>
-                        <a href="mailto:contact@delightwatersolutions.com">Email Us</a>
-                    </p>
+
+                <div>
+                    <h4>Direct</h4>
+                    <ul>
+                        <li><a href="tel:+94772666829">+94 77 266 6829</a></li>
+                        <li><a href="tel:+94777822332">+94 77 782 2332</a></li>
+                        <li><a href="mailto:contact@delightwatersolutions.com">Email us</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Delight Water Solutions (Pvt) Ltd. All rights reserved.</p>
+
+            <div class="footer-base">
+                <span>&copy; 2026 Delight Water Solutions (Pvt) Ltd</span>
+                <span>Galewela &middot; Sri Lanka</span>
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript (single, lean file) -->
-    <script>
-        (function() {
-            "use strict";
-
-            // --- MOBILE MENU ---
-            var menuToggle = document.getElementById('menuToggle');
-            var navMenu = document.getElementById('navMenu');
-
-            if (menuToggle && navMenu) {
-                menuToggle.addEventListener('click', function() {
-                    menuToggle.classList.toggle('active');
-                    navMenu.classList.toggle('active');
-                });
-
-                document.querySelectorAll('nav a').forEach(function(link) {
-                    link.addEventListener('click', function() {
-                        menuToggle.classList.remove('active');
-                        navMenu.classList.remove('active');
-                    });
-                });
-            }
-
-            // --- ACTIVE LINK HIGHLIGHT ---
-            var sections = document.querySelectorAll('section[id]');
-            var menuItems = document.querySelectorAll('nav a');
-
-            function highlightActiveLink() {
-                var currentSection = '';
-                var scrollPos = window.scrollY + 120;
-                sections.forEach(function(section) {
-                    if (scrollPos >= section.offsetTop) {
-                        currentSection = section.getAttribute('id');
-                    }
-                });
-                menuItems.forEach(function(item) {
-                    item.classList.remove('active');
-                    if (item.getAttribute('href') === '#' + currentSection) {
-                        item.classList.add('active');
-                    }
-                });
-            }
-
-            window.addEventListener('scroll', highlightActiveLink);
-            window.addEventListener('load', highlightActiveLink);
-
-            // --- SMOOTH SCROLL ---
-            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-                anchor.addEventListener('click', function(e) {
-                    var target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        e.preventDefault();
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                });
-            });
-
-            // --- HEADER SCROLL EFFECT ---
-            var header = document.querySelector('header');
-            if (header) {
-                window.addEventListener('scroll', function() {
-                    header.style.background = window.scrollY > 50
-                        ? 'rgba(10, 11, 15, 0.98)'
-                        : 'rgba(10, 11, 15, 0.95)';
-                });
-            }
-
-            // --- FORM HANDLING ---
-            var contactForm = document.getElementById('contactForm');
-            var formButton = document.getElementById('contactFormButton');
-            var formStatus = document.getElementById('contactFormStatus');
-
-            if (contactForm && formButton && formStatus) {
-                contactForm.addEventListener('submit', async function(event) {
-                    event.preventDefault();
-
-                    formButton.disabled = true;
-                    formButton.textContent = 'Sending...';
-                    formStatus.innerHTML = '';
-
-                    try {
-                        var response = await fetch(contactForm.action, {
-                            method: contactForm.method,
-                            body: new FormData(contactForm),
-                            headers: { 'Accept': 'application/json' }
-                        });
-
-                        if (response.ok) {
-                            formStatus.innerHTML = '<span style="color: var(--success);">✓ Thank you! We will get back to you soon.</span>';
-                            contactForm.reset();
-                        } else {
-                            formStatus.innerHTML = '<span style="color: var(--error);">⚠ Submission failed. Please try again.</span>';
-                        }
-                    } catch (error) {
-                        formStatus.innerHTML = '<span style="color: var(--error);">⚠ Network error. Please check your connection.</span>';
-                    }
-
-                    formButton.disabled = false;
-                    formButton.textContent = 'Send Message';
-                });
-            }
-
-            // --- FAQ ACCORDION ---
-            var faqItems = document.querySelectorAll('.faq-item');
-            faqItems.forEach(function(item) {
-                var question = item.querySelector('.faq-question');
-                var answer = item.querySelector('.faq-answer');
-                var icon = item.querySelector('.faq-icon');
-
-                if (question && answer) {
-                    question.addEventListener('click', function() {
-                        var isOpen = question.getAttribute('aria-expanded') === 'true';
-                        // Close all
-                        faqItems.forEach(function(other) {
-                            var q = other.querySelector('.faq-question');
-                            var a = other.querySelector('.faq-answer');
-                            var i = other.querySelector('.faq-icon');
-                            if (q) q.setAttribute('aria-expanded', 'false');
-                            if (a) a.style.maxHeight = '0';
-                            if (i) i.textContent = '+';
-                        });
-                        // Open this one if it was closed
-                        if (!isOpen) {
-                            question.setAttribute('aria-expanded', 'true');
-                            answer.style.maxHeight = answer.scrollHeight + 'px';
-                            if (icon) icon.textContent = '−';
-                        }
-                    });
-                    // Initialize closed
-                    answer.style.maxHeight = '0';
-                }
-            });
-
-            // --- MIN-RESOURCE BUBBLES ---
-            (function createBubbles() {
-                var wrapper = document.getElementById('bubbles');
-                if (!wrapper) return;
-                var count = window.innerWidth < 768 ? 8 : 18;
-                for (var i = 0; i < count; i++) {
-                    var b = document.createElement('div');
-                    b.className = 'bubble';
-                    var size = 12 + Math.random() * 36;
-                    b.style.width = size + 'px';
-                    b.style.height = size + 'px';
-                    b.style.left = (5 + Math.random() * 90) + '%';
-                    b.style.animationDuration = (6 + Math.random() * 14) + 's';
-                    b.style.animationDelay = (Math.random() * 8) + 's';
-                    wrapper.appendChild(b);
-                }
-            })();
-
-            // --- IMAGE LAZY LOAD HELPER ---
-            document.querySelectorAll('.product-image img').forEach(function(img) {
-                if (img.complete) {
-                    img.style.opacity = '1';
-                } else {
-                    img.addEventListener('load', function() { img.style.opacity = '1'; });
-                }
-            });
-
-        })();
-    </script>
-
+    <script src="assets/js/site.js" defer></script>
 </body>
 </html>
