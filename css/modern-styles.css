@@ -875,3 +875,134 @@ textarea.form-control { min-height:120px; resize:vertical; }
         transition-duration: .01ms !important;
     }
 }
+
+/* =========================================================
+   3D / WEBGL LAYER  (added for the immersive 3D upgrade)
+   ========================================================= */
+
+/* Full-viewport WebGL "flowing water" canvas — sits behind all content.
+   Transparent in CSS so the body gradient shows through when WebGL is
+   unavailable (graceful fallback); the renderer sets its own clear color. */
+#bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+    pointer-events: none;
+    background: transparent;
+}
+/* When WebGL water is live, fade the CSS caustic overlays so they don't fight it */
+body.webgl::before { opacity: 0.35; }
+body.webgl::after  { opacity: 0.35; }
+/* Content stacks above the water */
+body { z-index: auto; }
+header, .section, .footer, .bubbles-wrapper { position: relative; }
+
+/* ----------------------------------------------------------
+   HERO — interactive 3D RO system viewer
+   ---------------------------------------------------------- */
+.hero-visual { perspective: 1200px; }
+#ro-canvas {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 460px;
+    height: 460px;
+    display: block;
+    cursor: grab;
+    touch-action: none;
+}
+#ro-canvas:active { cursor: grabbing; }
+/* keep the static image as a graceful fallback until WebGL boots */
+#ro-fallback { display: block; }
+body.webgl #ro-fallback { display: none; }
+
+.ro-stage {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+/* (the floating glow halo + dashed orbit ring come from the existing
+   .hero-visual::before / ::after — reused unchanged so they frame both
+   the 3D canvas and the fallback image) */
+.ro-hint {
+    position: absolute;
+    bottom: -0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: #dff4ff;
+    background: linear-gradient(135deg, rgba(63,198,255,0.22), rgba(0,80,150,0.28));
+    border: 1px solid rgba(191,241,255,0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(0,40,90,0.4);
+    white-space: nowrap;
+    pointer-events: none;
+}
+.ro-hint svg { width: 15px; height: 15px; fill: currentColor; }
+body:not(.webgl) .ro-hint { display: none; }
+
+/* ----------------------------------------------------------
+   3D CARD "DIVISIONS" — pointer tilt + glare
+   ---------------------------------------------------------- */
+.tilt-3d {
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+.tilt-3d > * { transform: translateZ(0); }
+.tilt-glare {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .4s ease;
+    mix-blend-mode: screen;
+}
+
+/* ----------------------------------------------------------
+   3D SCROLL REVEAL — rise out of depth
+   ---------------------------------------------------------- */
+.reveal-3d {
+    opacity: 0;
+    transform: perspective(1100px) translateY(46px) translateZ(-90px) rotateX(10deg);
+    transform-style: preserve-3d;
+    transition: opacity .8s cubic-bezier(.2,.7,.2,1),
+                transform .9s cubic-bezier(.2,.7,.2,1);
+}
+.reveal-3d-in {
+    opacity: 1;
+    transform: perspective(1100px) translateY(0) translateZ(0) rotateX(0);
+}
+/* the original CSS keyframe entrance would double up — neutralise it for tilted cards */
+.tilt-3d.reveal-3d { animation: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal-3d { opacity: 1; transform: none; transition: none; }
+}
+
+/* ----------------------------------------------------------
+   Responsive tweaks for the 3D layer
+   ---------------------------------------------------------- */
+@media (max-width: 768px) {
+    #ro-canvas { height: 340px; max-width: 340px; }
+}
+@media (max-width: 480px) {
+    #ro-canvas { height: 280px; max-width: 280px; }
+    .ro-hint { font-size: 0.72rem; padding: 0.4rem 0.85rem; }
+}
+

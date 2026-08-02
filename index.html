@@ -51,6 +51,16 @@
     <!-- Styles -->
     <link rel="stylesheet" href="css/modern-styles.css">
 
+    <!-- Three.js (vendored locally — no runtime CDN dependency) import map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "/vendor/three.module.min.js",
+            "three/addons/": "/vendor/"
+        }
+    }
+    </script>
+
     <!-- JSON-LD Structured Data: LocalBusiness -->
     <script type="application/ld+json">
     {
@@ -173,7 +183,10 @@
 </head>
 <body>
 
-    <!-- Water Bubbles Background -->
+    <!-- WebGL "flowing water" background canvas (immersive 3D layer) -->
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+    <!-- Water Bubbles Background (CSS fallback — auto-hidden when WebGL runs) -->
     <div class="bubbles-wrapper" aria-hidden="true" id="bubbles"></div>
 
     <!-- Header -->
@@ -249,7 +262,16 @@
             </div>
 
             <div class="hero-visual">
-                <img src="assets/images/ro-system-1.jpg" alt="Industrial RO Water Treatment System by Delight Water Solutions" width="400" height="400" loading="eager" class="hero-image-rounded">
+                <div class="ro-stage">
+                    <!-- Interactive 3D RO water-filter system (WebGL) -->
+                    <canvas id="ro-canvas" aria-label="Interactive 3D model of an RO water filter system with UV reactor — drag to rotate"></canvas>
+                    <!-- Graceful fallback image until / unless WebGL initialises -->
+                    <img id="ro-fallback" src="assets/images/ro-system-1.jpg" alt="Industrial RO Water Treatment System by Delight Water Solutions" width="400" height="400" loading="eager" class="hero-image-rounded">
+                    <span class="ro-hint" aria-hidden="true">
+                        <svg viewBox="0 0 24 24"><path d="M13,6V11H18L12,19V14H7L13,6Z"/></svg>
+                        Drag to rotate · Scroll to zoom
+                    </span>
+                </div>
             </div>
         </div>
     </section>
@@ -1024,6 +1046,10 @@
 
         })();
     </script>
+
+    <!-- 3D / WebGL modules (Three.js, vendored in /vendor) -->
+    <script type="module" src="js/scene3d.js"></script>
+    <script type="module" src="js/ui3d.js"></script>
 
 </body>
 </html>
