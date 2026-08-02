@@ -1,0 +1,3 @@
+# Netlify response headers — keep archived legacy pages out of search indexes
+/_archive/*
+  X-Robots-Tag: noindex, nofollow
