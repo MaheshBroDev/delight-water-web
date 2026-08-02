@@ -377,7 +377,8 @@ nav a:hover, nav a.active {
 
 /* ---------- Cards (general glassy water) ---------- */
 .card, .expertise-card, .service-card, .product-showcase-card, .product-card,
-.contact-detail, .stat-card, .feature-highlight, .faq-item, .contact-form, .products-cta, .map-info {
+.contact-detail, .stat-card, .feature-highlight, .faq-item, .contact-form, .products-cta, .map-info,
+.coverage-point, .coverage-map-card {
     background: linear-gradient(160deg, rgba(255,255,255,0.10) 0%, rgba(0,80,140,0.25) 100%);
     border: 1px solid rgba(191,241,255,0.22);
     border-radius: 22px;
@@ -393,7 +394,8 @@ nav a:hover, nav a.active {
 .card::before, .expertise-card::before, .service-card::before,
 .product-showcase-card::before, .product-card::before,
 .contact-detail::before, .stat-card::before, .feature-highlight::before,
-.contact-form::before, .products-cta::before, .map-info::before {
+.contact-form::before, .products-cta::before, .map-info::before,
+.coverage-point::before, .coverage-map-card::before {
     content:''; position:absolute; top:0; left:10%; right:10%; height:1px;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
     z-index:2; pointer-events:none;
@@ -401,7 +403,7 @@ nav a:hover, nav a.active {
 
 .card:hover, .expertise-card:hover, .service-card:hover,
 .product-showcase-card:hover, .product-card:hover,
-.contact-detail:hover, .stat-card:hover, .feature-highlight:hover {
+.contact-detail:hover, .stat-card:hover, .feature-highlight:hover, .coverage-point:hover {
     transform: translateY(-6px);
     border-color: rgba(191,241,255,0.6);
     box-shadow: 0 20px 55px rgba(0,80,150,0.55), 0 0 30px rgba(63,198,255,0.35),
@@ -662,6 +664,30 @@ textarea.form-control { min-height:120px; resize:vertical; }
 .map-actions { display:flex; gap:.8rem; flex-wrap:wrap; }
 .map-actions .btn { flex:1 1 auto; justify-content:center; }
 
+/* ---------- Island-Wide Coverage ---------- */
+.coverage-container {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 2.5rem;
+    margin-top: 3rem;
+    align-items: center;
+}
+.coverage-points { display:flex; flex-direction:column; gap:1.2rem; }
+.coverage-point { padding: 1.4rem 1.6rem; }
+.coverage-point h3 { color:#fff; font-size:1.15rem; margin:0 0 .35rem; }
+.coverage-point h3:last-child { margin-bottom:0; }
+.coverage-point p { color:#dff4ff; line-height:1.65; margin:0; }
+.coverage-map-card { padding: 1rem; }
+.coverage-map-img {
+    width: 100%;
+    height: auto;
+    max-height: 540px;
+    object-fit: cover;
+    object-position: center 40%;
+    border-radius: 16px;
+    display: block;
+}
+
 /* ---------- FAQ ---------- */
 .faq-grid { max-width:820px; margin:0 auto; display:flex; flex-direction:column; gap:.8rem; }
 .faq-item { padding: 0; }
@@ -796,6 +822,7 @@ textarea.form-control { min-height:120px; resize:vertical; }
     .contact-container { grid-template-columns:1fr; gap:2rem; }
     .map-section { grid-template-columns:1fr; }
     .map-frame { min-height:380px; }
+    .coverage-container { grid-template-columns:1fr; gap:2rem; }
     .expertise-grid { grid-template-columns:1fr; }
 }
 @media (max-width: 768px) {
