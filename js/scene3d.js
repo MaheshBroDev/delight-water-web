@@ -314,9 +314,10 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
         m.material.opacity = m.userData.base * (0.85 + 0.15 * Math.sin(t * 0.6 + m.userData.phase));
         m.position.x += Math.sin(t * 0.1 + m.userData.phase) * 0.002;
       });
-      camera.position.x = mouse.x * 0.6;
-      camera.position.y = mouse.y * 0.4 - scroll.progress * 0.4;
-      camera.lookAt(0, 0, 0);
+      camera.position.x = mouse.x * 0.6 + Math.sin(scroll.progress * Math.PI) * 1.4;
+      camera.position.y = mouse.y * 0.4 - scroll.progress * 0.8;
+      camera.position.z = 18 - scroll.progress * 4;
+      camera.lookAt(scroll.progress * 0.5, -scroll.progress * 0.4, 0);
       renderer.render(scene, camera);
     }
     return { renderer, scene, camera, tick };
@@ -545,10 +546,15 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
     controls.maxDistance   = 11.0;
     controls.minPolarAngle = Math.PI * 0.18;
     controls.maxPolarAngle = Math.PI * 0.55;
-    controls.autoRotate    = !reduceMotion;
-    controls.autoRotateSpeed = 0.6;
+    /* autoRotate is OFF — the scroll position drives the camera path
+       now.  The user can still drag-to-orbit, but when they're not
+       dragging, the camera follows the scroll step. */
+    controls.autoRotate    = false;
     controls.enableZoom    = isMobile;
     controls.target.set(0, 0.3, 0);
+    /* lock the orbit spherical so the user can only orbit (rotate)
+       around the target — zoom is gated by enableZoom.  Auto-rotation
+       is fully off so the scroll path is the only camera motion. */
 
     const onResize = () => {
       const w = canvas.clientWidth, h = canvas.clientHeight;
@@ -577,27 +583,43 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
       if (!visible) return;
       const t = clock.getElapsedTime() * timeScale;
       /* smooth toward target */
-      heroStep.value += (heroStep.target - heroStep.value) * 0.08;
+      heroStep.value += (heroStep.target - heroStep.value) * 0.10;
 
       /* the camera follows a path through 5 keyframes that line up with
-         the 5 hero text panels.  The path orbits the system slowly while
-         also pulling back and rising. */
-      const p = heroStep.value;     // 0..4
-      const a = clock.getElapsedTime() * 0.12;
-      /* angle 0..4 maps to a 360° + 30° arc */
-      const angle = a + p * 0.35;
-      const r     = 5.0 + p * 0.4;
-      const y     = 2.4 - p * 0.55;
-      const h     = 0.3 - p * 0.05;
+         the 5 hero text panels.  The path is dramatic enough to be
+         visible — sweeping an arc around the system, dropping in height
+         to reveal the canisters up close, and rising back up. */
+      const p   = heroStep.value;             // 0..4
+      const pn  = p / 4;                       // 0..1 normalised
+      /* base angle orbits a full half-revolution as the user scrolls,
+         plus a slow continuous rotation. */
+      const baseAngle = -Math.PI * 0.5 + p * 0.85;
+      const driftAngle = clock.getElapsedTime() * 0.06;
+      const angle = baseAngle + driftAngle;
+      /* radius pulls in closer for the middle panels (intimate closeups)
+         then back out for the final panel (heroic wide). */
+      const r     = 6.2 - Math.sin(pn * Math.PI) * 2.0;
+      /* height drops from a high hero shot down to eye level for the
+         middle panels, then back up for the finale. */
+      const y     = 3.0 - Math.sin(pn * Math.PI) * 1.8;
       const target = new THREE.Vector3(
         Math.cos(angle) * r,
         y,
         Math.sin(angle) * r,
       );
-      /* only nudge the camera when the user isn't actively dragging */
+      const lookY = 0.2 + pn * 0.1;
+
+      /* When the user isn't actively dragging, drive the camera and
+         target from the scroll path.  When the user IS dragging, leave
+         OrbitControls alone and just keep the water/UV/gauge anims
+         running. */
       if (!controls._isDragging) {
-        camera.position.lerp(target, 0.05);
-        controls.target.lerp(new THREE.Vector3(0, h, 0), 0.05);
+        camera.position.lerp(target, 0.10);
+        controls.target.lerp(new THREE.Vector3(0, lookY, 0), 0.10);
+        /* re-derive OrbitControls' internal spherical from our position
+           so user-drag picks up smoothly from wherever the scroll left
+           the camera.  OrbitControls reads camera.position - target on
+           update(), so this is enough. */
       }
 
       /* tubes flow */
@@ -778,9 +800,10 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
     function tick() {
       if (!visible) return;
       const t = clock.getElapsedTime() * timeScale;
-      step.value += (step.target - step.value) * 0.08;
-      /* very slow rotation so the moment feels meditative */
-      group.rotation.y = t * 0.18 + step.value * 0.4;
+      step.value += (step.target - step.value) * 0.10;
+      /* slow continuous rotation, plus a scroll-driven sweep so the
+         canister visibly responds to scrolling.  step.value is 0..1. */
+      group.rotation.y = t * 0.18 + step.value * 1.4;
       bMat.uniforms.uTime.value = t;
       composer.render();
     }
@@ -949,10 +972,17 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
     function tick() {
       if (!visible) return;
       const t = clock.getElapsedTime() * timeScale;
-      step.value += (step.target - step.value) * 0.08;
-      /* very gentle camera drift */
-      camera.position.x = Math.sin(t * 0.15) * 0.2;
-      camera.position.y = Math.cos(t * 0.18) * 0.1;
+      step.value += (step.target - step.value) * 0.10;
+      /* very gentle camera drift, plus a scroll-driven arc so the
+         camera actually responds to scrolling through the section. */
+      const p = step.value;                       // 0..1
+      const pn = Math.max(0, Math.min(1, p));
+      /* base position is a slow arc on the X axis as the user scrolls. */
+      const baseX = (pn - 0.5) * 1.4;
+      const baseY = 0.0;
+      camera.position.x = baseX + Math.sin(t * 0.15) * 0.15;
+      camera.position.y = baseY + Math.cos(t * 0.18) * 0.08;
+      camera.position.z = 5;
       camera.lookAt(0, 0, 0);
       bMat.uniforms.uTime.value = t;
       composer.render();
