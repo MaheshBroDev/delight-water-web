@@ -1,0 +1,6 @@
+# Old / unrelated files
+_archive/
+.vscode/
+.idea/
+.DS_Store
+*.log
