@@ -1089,5 +1089,37 @@
     <script src="vendor/gsap/ScrollTrigger.min.js" defer></script>
     <script src="js/ui3d.js" defer></script>
 
+    <!-- Debug HUD (only visible when ?debug=1 in the URL or window.__delightDebug) -->
+    <script>
+      (function() {
+        if (!new URLSearchParams(location.search).has('debug') && !window.__delightDebug) return;
+        const hud = document.createElement('div');
+        hud.id = 'debug-hud';
+        hud.style.cssText = 'position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(0,0,0,.75);color:#0f0;font:11px/1.4 monospace;padding:8px 10px;border-radius:6px;max-width:320px;line-height:1.5;';
+        document.body.appendChild(hud);
+        const log = (msg) => { hud.innerHTML += msg + '<br>'; };
+        log('debug HUD active');
+        const ready = () => {
+          const d = window.__delight3d;
+          if (!d) { log('waiting for 3D engine...'); return; }
+          log('bg: ' + (d.bg ? 'OK' : 'NO'));
+          log('hero: ' + (d.hero ? 'OK' : 'NO'));
+          log('canister: ' + (d.canister ? 'OK' : 'NO'));
+          log('pure: ' + (d.pure ? 'OK' : 'NO'));
+          log('webgl: ' + document.body.classList.contains('webgl'));
+          if (d.hero) {
+            const c = d.hero.camera || d.hero.scene?.camera;
+            if (c) log('hero cam: ' + c.position.x.toFixed(1) + ',' + c.position.y.toFixed(1) + ',' + c.position.z.toFixed(1));
+          }
+        };
+        let tries = 0;
+        const t = setInterval(() => {
+          tries++;
+          ready();
+          if (window.__delight3d || tries > 30) clearInterval(t);
+        }, 200);
+      })();
+    </script>
+
 </body>
 </html>

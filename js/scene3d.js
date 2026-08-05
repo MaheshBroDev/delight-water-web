@@ -32,13 +32,30 @@
 import * as THREE from 'three';
 import { OrbitControls }   from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
+/* Postprocessing imports (EffectComposer / UnrealBloomPass / OutputPass)
+   are kept vendored but no longer imported into the engine — the plain
+   WebGLRenderer is more robust.  The bloom look is faked by boosting
+   emissive intensities on the UV glow. */
 
 (() => {
   'use strict';
+
+  /* global error handler so we can surface module-level failures */
+  let errored = false;
+  function fail(msg, err) {
+    if (errored) return;
+    errored = true;
+    console.error('[delight3d] fatal:', msg, err);
+    /* leave body.webgl OFF so the static fallback image is shown */
+  }
+  window.addEventListener('error', (e) => {
+    if (e.filename && e.filename.includes('scene3d.js')) {
+      fail('runtime error: ' + e.message, e.error);
+    }
+  });
+  window.addEventListener('unhandledrejection', (e) => {
+    fail('unhandled promise rejection: ' + (e.reason && e.reason.message), e.reason);
+  });
 
   /* ============================  CAPABILITY  ============================ */
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -60,6 +77,10 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
   const timeScale = reduceMotion ? 0.18 : 1.0;
   const DPR_CAP   = isLowPower ? 1.25 : 1.75;
   const TEX = (s) => { s.colorSpace = THREE.SRGBColorSpace; return s; };
+  /* We use the plain WebGLRenderer for all 4 scenes — no postprocessing.
+     The composer is a nice-to-have but it adds extra WebGL state and
+     failure modes.  We compensate for the missing bloom by boosting
+     the UV emissive intensity. */
 
   /* ==========================  SCROLL PROGRESS  ========================= */
   const scroll = { progress: 0, velocity: 0 };
@@ -502,29 +523,35 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
     renderer.toneMappingExposure = 1.15;
 
     const scene = new THREE.Scene();
-    {
-      const c = document.createElement('canvas');
-      c.width = c.height = 256;
-      const x = c.getContext('2d');
-      const g = x.createLinearGradient(0, 0, 0, 256);
-      g.addColorStop(0, '#0a3a5c'); g.addColorStop(1, '#001a2e');
-      x.fillStyle = g; x.fillRect(0, 0, 256, 256);
-      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-      scene.background = t;
-    }
+    /* Solid colored background so the scene always has visible content
+       even if all other 3D fails.  The deep-water gradient is drawn by
+       a fullscreen background plane in front of the scene, not the
+       scene's clear color. */
+    scene.background = new THREE.Color(0x001a2e);
 
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
     camera.position.set(5.5, 2.4, 6.0);
     camera.lookAt(0, 0.4, 0);
 
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    pmrem.compileEquirectangularShader();
-    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    /* try the HDRI environment; if it fails, the materials fall back
+       to direct lighting (which is what they're getting anyway). */
+    let hasEnv = false;
+    try {
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      pmrem.compileEquirectangularShader();
+      const envTex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+      scene.environment = envTex;
+      hasEnv = true;
+    } catch (e) {
+      console.warn('[delight3d] PMREM environment failed, continuing without:', e.message);
+    }
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.35));
-    const key = new THREE.DirectionalLight(0xffffff, 1.4);
+    /* A solid ambient + strong directional light so the scene reads
+       well even without the HDRI environment. */
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const key = new THREE.DirectionalLight(0xffffff, 2.0);
     key.position.set(5, 8, 4); scene.add(key);
-    const rim = new THREE.DirectionalLight(0x66e0ff, 0.8);
+    const rim = new THREE.DirectionalLight(0x66e0ff, 1.2);
     rim.position.set(-6, 3, -4); scene.add(rim);
     const fill = new THREE.PointLight(0xffaa66, 0.6, 14, 1.5);
     fill.position.set(0, 4, 4); scene.add(fill);
@@ -532,11 +559,9 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
     const skid = buildROSkid();
     scene.add(skid.root);
 
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.65, 0.6, 0.18);
-    composer.addPass(bloom);
-    composer.addPass(new OutputPass());
+    /* Plain WebGLRenderer (no postprocessing).  The UV emissive is
+       boosted to compensate for the missing bloom. */
+    skid.uvGlow.emissiveIntensity = 6.0;
 
     const controls = new OrbitControls(camera, canvas);
     controls.enableDamping = true;
@@ -560,10 +585,8 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
       const w = canvas.clientWidth, h = canvas.clientHeight;
       if (w === 0 || h === 0) return;
       renderer.setSize(w, h, false);
-      composer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      bloom.setSize(w, h);
     };
     onResize();
     window.addEventListener('resize', onResize);
@@ -610,16 +633,10 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
       const lookY = 0.2 + pn * 0.1;
 
       /* When the user isn't actively dragging, drive the camera and
-         target from the scroll path.  When the user IS dragging, leave
-         OrbitControls alone and just keep the water/UV/gauge anims
-         running. */
+         target from the scroll path. */
       if (!controls._isDragging) {
         camera.position.lerp(target, 0.10);
         controls.target.lerp(new THREE.Vector3(0, lookY, 0), 0.10);
-        /* re-derive OrbitControls' internal spherical from our position
-           so user-drag picks up smoothly from wherever the scroll left
-           the camera.  OrbitControls reads camera.position - target on
-           update(), so this is enough. */
       }
 
       /* tubes flow */
@@ -631,16 +648,16 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
       const a2 = -Math.PI * 0.25 + Math.sin(t * 0.8 + 1.3) * 0.25;
       skid.gauge1.userData.needle.rotation.z = a1;
       skid.gauge2.userData.needle.rotation.z = a2;
-      /* UV pulse */
-      skid.uv.userData.light.intensity = 1.4 + Math.sin(t * 2.0) * 0.2;
-      skid.uvGlow.emissiveIntensity = 3.0 + Math.sin(t * 2.0) * 0.5;
+      /* UV pulse — boosted to compensate for the missing bloom */
+      skid.uv.userData.light.intensity = 1.6 + Math.sin(t * 2.0) * 0.3;
+      skid.uvGlow.emissiveIntensity = 5.0 + Math.sin(t * 2.0) * 1.0;
       /* canisters bob */
       skid.canisters.forEach((c, i) => {
         c.position.y = 0.1 + Math.sin(t * 0.6 + i) * 0.012;
       });
 
       controls.update();
-      composer.render();
+      renderer.render(scene, camera);
     }
     /* OrbitControls drag detection (we don't want to fight the user) */
     controls.addEventListener('start', () => { controls._isDragging = true; });
@@ -772,20 +789,12 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
 
     scene.add(group);
 
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.8, 0.7, 0.2);
-    composer.addPass(bloom);
-    composer.addPass(new OutputPass());
-
     const onResize = () => {
       const w = canvas.clientWidth, h = canvas.clientHeight;
       if (!w || !h) return;
       renderer.setSize(w, h, false);
-      composer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      bloom.setSize(w, h);
     };
     onResize();
     window.addEventListener('resize', onResize);
@@ -805,7 +814,7 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
          canister visibly responds to scrolling.  step.value is 0..1. */
       group.rotation.y = t * 0.18 + step.value * 1.4;
       bMat.uniforms.uTime.value = t;
-      composer.render();
+      renderer.render(scene, camera);
     }
     function setStep(v) { step.target = v; }
     return { tick, setStep, onResize };
@@ -944,20 +953,12 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
 
     scene.add(group);
 
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.9, 0.7, 0.18);
-    composer.addPass(bloom);
-    composer.addPass(new OutputPass());
-
     const onResize = () => {
       const w = canvas.clientWidth, h = canvas.clientHeight;
       if (!w || !h) return;
       renderer.setSize(w, h, false);
-      composer.setSize(w, h);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      bloom.setSize(w, h);
     };
     onResize();
     window.addEventListener('resize', onResize);
@@ -985,19 +986,42 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
       camera.position.z = 5;
       camera.lookAt(0, 0, 0);
       bMat.uniforms.uTime.value = t;
-      composer.render();
+      renderer.render(scene, camera);
     }
     function setStep(v) { step.target = v; }
     return { tick, setStep, onResize };
   }
 
   /* ============================  BOOT  ================================= */
-  const bg       = buildBackground();
-  const hero     = buildHero();
-  const canister = buildCanister();
-  const pure     = buildPure();
+  let bg, hero, canister, pure;
+  try {
+    bg       = buildBackground();
+    console.log('[delight3d] background scene:', bg ? 'OK' : 'skipped (no canvas)');
+  } catch (e) { fail('buildBackground', e); }
+  try {
+    hero     = buildHero();
+    console.log('[delight3d] hero scene:', hero ? 'OK' : 'skipped (no canvas)');
+  } catch (e) { fail('buildHero', e); }
+  try {
+    canister = buildCanister();
+    console.log('[delight3d] canister scene:', canister ? 'OK' : 'skipped (no canvas)');
+  } catch (e) { fail('buildCanister', e); }
+  try {
+    pure     = buildPure();
+    console.log('[delight3d] pure scene:', pure ? 'OK' : 'skipped (no canvas)');
+  } catch (e) { fail('buildPure', e); }
 
-  if (!bg && !hero && !canister && !pure) return;
+  /* Only mark the body as webgl-capable once at least one scene
+     built successfully.  This way, if all three fail, the CSS
+     fallback image is shown instead of an empty canvas. */
+  if (bg || hero || canister || pure) {
+    document.body.classList.add('webgl');
+    console.log('[delight3d] ready:',
+      [bg && 'background', hero && 'hero', canister && 'canister', pure && 'pure']
+        .filter(Boolean).join(', '));
+  } else {
+    console.warn('[delight3d] no scenes built — static fallback will be shown');
+  }
 
   let running = true;
   document.addEventListener('visibilitychange', () => {
@@ -1006,14 +1030,14 @@ import { OutputPass }      from 'three/addons/postprocessing/OutputPass.js';
   });
   function frame() {
     if (running) {
-      if (bg)       bg.tick();
-      if (hero)     hero.tick();
-      if (canister) canister.tick();
-      if (pure)     pure.tick();
+      try { if (bg)       bg.tick(); } catch (e) { fail('bg.tick', e); running = false; }
+      try { if (hero)     hero.tick(); } catch (e) { fail('hero.tick', e); running = false; }
+      try { if (canister) canister.tick(); } catch (e) { fail('canister.tick', e); running = false; }
+      try { if (pure)     pure.tick(); } catch (e) { fail('pure.tick', e); running = false; }
     }
-    requestAnimationFrame(frame);
+    if (running) requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  if (running) requestAnimationFrame(frame);
 
   /* expose for ui3d.js (it'll drive heroStep from ScrollTrigger) */
   window.__delight3d = { bg, hero, canister, pure, scroll };
