@@ -1,79 +1,128 @@
 # Delight Water Solutions — 3D / WebGL Upgrade Brief
 
-This document is the **adapted prompt** used to drive the immersive 3D rebuild of the
-Delight Water Solutions website, plus a summary of how it was implemented.
+This document is the **design brief + implementation notes** for the immersive
+3D / WebGL rebuild of the Delight Water Solutions website, inspired by the
+Awwwards *Site of the Day* — *Active Theory* / `w.`'s
+**"3D Realistic Water Experiment"** (`https://water-simulation.vercel.app/`).
+
+The goal is the language of that reference — **photoreal flowing water, caustics,
+waterline, configuration panel, scroll-driven 3D** — applied to a real B2B
+water-treatment brand.
 
 ---
 
-## Adapted prompt (water-treatment + RO focused)
+## Design language (what we are matching)
 
-> You are a developer tasked with rebuilding a water-treatment company website as a
-> **fully-immersed 3D WebGL experience**. Your main objective is to implement a
-> high-performance WebGL "clean flowing water" environment that wraps the whole site,
-> plus an interactive, photoreal **3D Reverse-Osmosis water-filter system with a UV
-> reactor** as the hero centrepiece. The result should read like a million-dollar,
-> agency-built 3D site while remaining extremely fast to render on everyday devices.
->
-> **Focus on:**
->
-> – A real-time WebGL background that visualises **clean, flowing water** — an
->   undulating water surface, light caustics, god-rays, rising bubbles and drifting
->   current particles — rendered with GPU shaders for speed.
-> – An **interactive 3D RO model** (filter canisters, stainless UV chamber with a
->   glowing quartz tube, pressure gauges, feed pump, manifold pipes and a clean-water
->   faucet) that the user can orbit/zoom, with **visibly flowing water** moving through
->   clear sight-tubes. Model it on the Sketchfab *"RO Product Water Filter System with
->   UV"* (id `645dc166e0fb4f0e8330ae5714c8b64b`).
-> – Content **"3D divisions"** — cards that tilt in real 3D space toward the pointer
->   and rise out of depth on scroll.
-> – Cinematic image-based lighting (PMREM environment), ACES filmic tone mapping and
->   sRGB output for a premium metal/glass look.
-> – **Performance & robustness:** capped device-pixel-ratio, render-gating by viewport
->   visibility, GPU-side particle animation, `prefers-reduced-motion` support, mobile
->   scaling, and a graceful fallback to the existing CSS water theme if WebGL is
->   unavailable.
->
-> **# Steps**
-> 1. Vendor Three.js locally (no runtime CDN dependency) and load it via an ES-module
->    import map.
-> 2. Build the flowing-water background scene with custom GLSL (Gerstner-style wave
->    displacement + procedural caustics), volumetric god-rays, GPU bubble/particle
->    systems and bokeh, with pointer parallax.
-> 3. Build the RO water-filter system procedurally from physical materials (polished
->    steel, glass canisters, glowing UV tube), animate flowing water inside clear tubes,
->    UV pulse light and a dripping faucet, and wire it to OrbitControls (auto-rotate).
-> 4. Add a CSS 3D layer: pointer-tilt "divisions" with glare, plus 3D scroll reveals.
-> 5. Gate rendering (IntersectionObserver + `visibilitychange`), cap DPR, scale down on
->    mobile, and respect reduced-motion; keep the original CSS water theme as fallback.
-> 6. Preserve all existing SEO, structured data (JSON-LD), accessibility, forms and copy.
->
-> **# Output**
-> Working, self-contained static site (HTML/CSS/JS + vendored Three.js) — see the
-> implementation notes below.
+| Element from the reference | Our adaptation |
+|---|---|
+| **Realistic flowing water** shader as a full-viewport background | Custom GLSL waterline plane (animated noise + mouse parallax) + animated caustic floor + god-rays + GPU-animated rising bubbles + drifting current particles, all over a deep-water gradient. |
+| **Waterline** (the iconic horizontal "surface" line) | A thin shader-driven band with a small bright specular highlight, ripples, and a stronger glow under the pointer. |
+| **Caustics** shimmering on the bottom | Additive GLSL caustic shader on a large floor plane, three sin/cos lattices multiplied and powered for the classic underwater light-pattern. |
+| **Volumetric god-rays** | Five additive gradient planes that drift and pulse softly. |
+| **GPU rising bubbles** | Custom-shader `THREE.Points` — sizes/positions animated in the vertex shader, no per-frame CPU loop. |
+| **Drifting current particles** | Custom-shader points with pointer parallax (nudge toward the cursor). |
+| **Pointer parallax** | The whole background scene subtly shifts to the cursor position. |
+| **3D RO system as a hero centerpiece** | Procedural reverse-osmosis skid: 4-post frame, 3 glass filter canisters (water + cartridge inside), horizontal UV chamber with glowing quartz tube + point light, manifold, **clear sight-tubes with visibly flowing water**, 2 pressure gauges, red feed pump, clean-water faucet. |
+| **HDRI IBL** (the photoreal look) | `RoomEnvironment` baked through `PMREMGenerator` for a believable studio reflection on steel + glass. |
+| **Bloom on the UV glow** | `EffectComposer` + `UnrealBloomPass` + `OutputPass` + ACES tone mapping for the premium metal/glass look. |
+| **Configuration panel** (a hallmark of the reference) | Floating glass UI next to the 3D viewer with **filter-stage buttons** (All / Sediment / Carbon / RO) and **sliders** for flow rate and UV intensity. Each control mutates the live 3D model in real time. |
+| **Scroll-driven camera path** | The hero camera slowly arcs and zooms out as the user scrolls, so the 3D scene stays alive while the page transitions. |
+| **Drag-to-orbit** | `OrbitControls` with damping, auto-rotate (off for `prefers-reduced-motion`), polar-angle limits to keep the framing. |
+| **Cinematic scroll narrative** | Lenis smooth-scroll + GSAP + `ScrollTrigger` drive a 3D "rise-from-depth" reveal on every section card, parallax on the section title, and a hero fade-out. |
+| **3D "divisions"** (cards) | Pointer-tilt + radial glare on the section cards (CSS `transform: rotateX/rotateY`). |
+| **Stats count-up** | GSAP counts `15+ / 500+ / 100% / 24/7` on scroll. |
 
 ---
 
-## Implementation summary
+## Tech stack
+
+- **Three.js** (vendored, no runtime CDN) + `OrbitControls` + `RoomEnvironment` + `EffectComposer` + `UnrealBloomPass` + `OutputPass` + `RenderPass`.
+- **Lenis** (vendored) for smooth-scroll, hooked into the GSAP ticker.
+- **GSAP** + **ScrollTrigger** (vendored) for the scroll narrative.
+- **Vanilla JS** + native ES modules. **No build step.**
+- The import map is in `index.html` and looks like:
+  ```html
+  <script type="importmap">
+  { "imports": {
+      "three": "/vendor/three.module.min.js",
+      "three/addons/": "/vendor/"
+  } }
+  </script>
+  ```
+  Note: `three/addons/postprocessing/*` and `three/addons/postprocessing/shaders/*`
+  files use *relative* imports (`./Pass.js`, `../shaders/CopyShader.js`), so the
+  import map doesn't need entries for them — they resolve naturally from their
+  own directory.
+
+---
+
+## File layout
 
 | Layer | File | What it does |
 |------|------|--------------|
-| Flowing-water WebGL background | `js/scene3d.js` → `initBackground()` | `#bg-canvas`: GLSL wave water surface (ceiling + floor), additive caustic plane, volumetric god-rays, GPU rising bubbles, drifting current particles, bokeh discs, pointer parallax + bob. |
-| Interactive 3D RO system | `js/scene3d.js` → `initROViewer()` | `#ro-canvas`: procedural stainless skid frame, 3 glass filter canisters (water + cartridge), horizontal UV reactor with glowing quartz tube + point light, steel manifold, **clear sight-tubes with flowing water rings**, 2 pressure gauges, feed pump, clean-water faucet with dripping stream/basin, contact shadow, glow ring. PMREM (RoomEnvironment) IBL, ACES tone mapping, OrbitControls auto-rotate. |
-| DOM 3D layer | `js/ui3d.js` | Pointer-tilt 3D "divisions" with glare + 3D scroll-reveal + hero parallax. Reduced-motion / touch aware. |
-| Three.js (vendored) | `vendor/three.module.min.js`, `vendor/controls/OrbitControls.js`, `vendor/environments/RoomEnvironment.js` | Loaded via `<script type="importmap">` — zero runtime CDN dependency. |
-| Styles | `css/modern-styles.css` | New "3D / WebGL layer" section (canvas stacking, hero 3D stage, tilt, reveal, responsive). |
-| Markup | `index.html` | Added `#bg-canvas`, hero `#ro-canvas` (+ graceful fallback image), import map and the two module scripts. All SEO/JSON-LD/forms preserved. |
+| Flowing-water WebGL background | `js/scene3d.js` → `buildBackground()` | `#bg-canvas`: waterline + caustics + god-rays + GPU bubbles + current particles + pointer parallax. |
+| Interactive 3D RO system | `js/scene3d.js` → `buildHero()` | `#ro-canvas`: procedural skid, glass canisters, UV reactor with glowing quartz tube, pressure gauges, feed pump, sight-tubes with flowing water, faucet, bloom. HDRI IBL + ACES + scroll-driven camera. |
+| Configuration panel wiring | `js/scene3d.js` → bottom of `buildHero()` | Reads `.config-btn` / `.config-slider` clicks and mutates canisters, flow material, and UV emissive intensity live. |
+| Scroll narrative | `js/ui3d.js` | Lenis + GSAP + ScrollTrigger; 3D reveals; pointer-tilt + glare; stats count-up; configuration panel toggle + slider `<output>` updates. |
+| Three.js + addons | `vendor/three.module.min.js`, `vendor/controls/OrbitControls.js`, `vendor/environments/RoomEnvironment.js` | Vendored locally (no CDN). |
+| Postprocessing | `vendor/postprocessing/*.js`, `vendor/shaders/*.js` | Vendored locally. |
+| Lenis | `vendor/lenis/lenis.min.js` | Vendored locally. |
+| GSAP + ScrollTrigger | `vendor/gsap/*.min.js` | Vendored locally. |
+| Styles | `css/modern-styles.css` | New "3D / WebGL layer" section (canvas stacking, hero 3D stage, glare, configuration panel, Lenis, responsive). |
+| Markup | `index.html` | Added `#bg-canvas`, hero `#ro-canvas` (+ graceful fallback image), the **configuration panel**, import map, the 3D module + Lenis/GSAP scripts. All SEO/JSON-LD/forms preserved. |
 
-### Performance & accessibility features
-- DPR capped (`≤2` desktop / `≤1.5–2` mobile); `powerPreference: 'high-performance'`.
+---
+
+## Performance & accessibility features
+
+- DPR capped (`≤1.75` desktop / `≤1.25` mobile); `powerPreference: 'high-performance'`.
 - Single `requestAnimationFrame` loop drives both scenes; pauses on `visibilitychange`.
 - The RO viewer is render-gated by `IntersectionObserver` (only draws when on-screen).
 - Particles/bubbles animate **on the GPU** (custom shaders) — no per-frame CPU loops.
-- `prefers-reduced-motion` → calm, slow water + no auto-rotate + instant reveals.
+- `prefers-reduced-motion` → calm, slow water + no auto-rotate + instant reveals + Lenis disabled.
 - Graceful fallback: if WebGL is unavailable, the original CSS water/bubble theme stays
-  and the hero shows the static RO image; `#bg-canvas` is simply never initialised.
+  and the hero shows the static RO image; `#bg-canvas` is never initialised.
+- All vendor JS is local — no third-party CDN dependency at runtime.
 
-### Notes
-- The Sketchfab model is **referenced** for accuracy; the hero uses a procedurally-built
-  Three.js model so the site stays self-contained, fast-loading and licence-free. A real
-  `.glb` of that exact model can be dropped in later via `GLTFLoader` if desired.
+---
+
+## SEO / AEO / accessibility preserved
+
+All the existing SEO, structured data, accessibility, forms, and copy are
+**unchanged**:
+- `<title>`, `<meta>`, Open Graph, Twitter Card, canonical URL.
+- JSON-LD: `LocalBusiness`, `FAQPage`, `Service`.
+- Form posts to Formspree (`#contactForm`).
+- Skip-links, alt text, ARIA labels preserved.
+- New elements (`#bg-canvas`, `#ro-canvas`, configuration panel) all have
+  `aria-label`s or `aria-hidden="true"` as appropriate.
+
+The 3D is **enhancement** only — the entire site is fully readable, navigable,
+and indexable without JavaScript.
+
+---
+
+## How to preview
+
+Serve the directory with any static server (the project uses no build step):
+
+```sh
+python3 -m http.server 8080
+# then open http://localhost:8080
+```
+
+Visual QA should be done in a real browser (the sandbox has no Chromium for
+headless WebGL testing).
+
+---
+
+## Future work / out of scope for this PR
+
+- The 3D model is procedural — a real `.glb` of an RO system could be dropped
+  in via `GLTFLoader` later.
+- A custom `WaterMaterial` (MeshPhysicalMaterial with transmission + a refraction
+  normal map) could replace the simple glass canisters for a more dramatic
+  photoreal look — kept simple here for performance.
+- The configuration panel currently controls filter selection, flow rate and UV
+  intensity; future iterations could add temperature, pressure, and pump speed
+  sliders.

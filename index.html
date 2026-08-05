@@ -221,58 +221,76 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
+    <!-- Hero Section — pinned 3D + scroll-driven narrative text -->
     <section class="hero" id="home">
-        <!-- Animated multi-layer SVG waves at the bottom of hero -->
-        <div class="hero-wave" aria-hidden="true">
-            <svg viewBox="0 0 2880 150" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="waveGrad1" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#3fc6ff" stop-opacity="0.35"/>
-                        <stop offset="100%" stop-color="#0077b6" stop-opacity="0.8"/>
-                    </linearGradient>
-                    <linearGradient id="waveGrad2" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#6ee7ff" stop-opacity="0.45"/>
-                        <stop offset="100%" stop-color="#00b4d8" stop-opacity="0.9"/>
-                    </linearGradient>
-                    <linearGradient id="waveGrad3" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#bff1ff" stop-opacity="0.6"/>
-                        <stop offset="100%" stop-color="#48cae4" stop-opacity="1"/>
-                    </linearGradient>
-                </defs>
-                <path class="wave1" fill="url(#waveGrad1)"
-                    d="M0,70 C240,120 480,20 720,70 C960,120 1200,20 1440,70 C1680,120 1920,20 2160,70 C2400,120 2640,20 2880,70 L2880,150 L0,150 Z"/>
-                <path class="wave2" fill="url(#waveGrad2)"
-                    d="M0,90 C200,40 400,130 720,90 C1040,50 1200,120 1440,90 C1680,60 1920,130 2160,90 C2400,50 2640,120 2880,90 L2880,150 L0,150 Z"/>
-                <path class="wave3" fill="url(#waveGrad3)"
-                    d="M0,110 C240,70 480,140 720,110 C960,80 1200,130 1440,110 C1680,90 1920,140 2160,110 C2400,80 2640,130 2880,110 L2880,150 L0,150 Z"/>
-            </svg>
+        <!-- The 3D RO system stays pinned in the viewport; text scrolls past it -->
+        <div class="hero-stage" aria-hidden="true">
+            <canvas id="ro-canvas" aria-label="3D model of a Reverse-Osmosis water-filter system — interactive"></canvas>
+            <img id="ro-fallback" src="assets/images/ro-system-1.jpg" alt="" width="800" height="800" loading="eager" aria-hidden="true">
         </div>
-        <div class="container">
-            <div class="hero-content">
-                <h1>Expert Water Treatment <span class="gradient-text">Since 2008</span></h1>
-                <p class="hero-description">
-                    Clean Water, Healthier Tomorrow. Transform your everyday water into refreshing, clean, and safe drinking water
-                    with our advanced purification systems. Serving Sri Lanka since 2008.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#products" class="btn btn-primary">Our Products</a>
-                    <a href="#contact" class="btn btn-outline">Get Free Consultation</a>
-                </div>
+
+        <div class="hero-text">
+            <div class="hero-text__panel" data-hero-step="0">
+                <p class="hero-eyebrow">Delight Water Solutions</p>
+                <h1 class="hero-headline">
+                    Pure water.<br>
+                    <span class="hero-headline__accent">Engineered in Sri Lanka.</span>
+                </h1>
             </div>
 
-            <div class="hero-visual">
-                <div class="ro-stage">
-                    <!-- Interactive 3D RO water-filter system (WebGL) -->
-                    <canvas id="ro-canvas" aria-label="Interactive 3D model of an RO water filter system with UV reactor — drag to rotate"></canvas>
-                    <!-- Graceful fallback image until / unless WebGL initialises -->
-                    <img id="ro-fallback" src="assets/images/ro-system-1.jpg" alt="Industrial RO Water Treatment System by Delight Water Solutions" width="400" height="400" loading="eager" class="hero-image-rounded">
-                    <span class="ro-hint" aria-hidden="true">
-                        <svg viewBox="0 0 24 24"><path d="M13,6V11H18L12,19V14H7L13,6Z"/></svg>
-                        Drag to rotate · Scroll to zoom
-                    </span>
-                </div>
+            <div class="hero-text__panel" data-hero-step="1">
+                <h2 class="hero-step__title">Reverse Osmosis.</h2>
+                <p class="hero-step__body">
+                    Multi-stage filtration that turns any source into water
+                    you can trust — from coastal wells to mountain springs.
+                </p>
             </div>
+
+            <div class="hero-text__panel" data-hero-step="2">
+                <h2 class="hero-step__title">UV Purification.</h2>
+                <p class="hero-step__body">
+                    A sealed quartz chamber neutralises microorganisms
+                    without chemicals, without taste, without compromise.
+                </p>
+            </div>
+
+            <div class="hero-text__panel" data-hero-step="3">
+                <h2 class="hero-step__title">Built to last.</h2>
+                <p class="hero-step__body">
+                    Stainless frames. Glass canisters. Pressure-rated
+                    manifolds. Engineered for years of clean, quiet service.
+                </p>
+            </div>
+
+            <div class="hero-text__panel hero-text__panel--end" data-hero-step="4">
+                <h2 class="hero-step__title">Sri Lanka, since 2008.</h2>
+                <p class="hero-step__body">
+                    From a small workshop in Galewela to island-wide
+                    installation, maintenance and 24/7 support.
+                </p>
+                <a href="#about" class="btn-pill">Continue the story <span aria-hidden="true">↓</span></a>
+            </div>
+        </div>
+
+        <!-- subtle scroll indicator (Apple-clean) -->
+        <div class="scroll-hint" aria-hidden="true">
+            <span>Scroll</span>
+            <span class="scroll-hint__line"></span>
+        </div>
+    </section>
+
+    <!-- Water Moment — second pinned 3D moment, closeup of a glass canister -->
+    <section class="moment" id="moment-canister" aria-label="Closeup of a glass water filter canister">
+        <div class="moment__stage" aria-hidden="true">
+            <canvas id="canister-canvas" aria-label="3D model of a glass water filter canister"></canvas>
+        </div>
+        <div class="moment__caption">
+            <p class="moment__eyebrow">Clarity you can see.</p>
+            <h2 class="moment__title">Every drop, in full view.</h2>
+            <p class="moment__body">
+                Our glass canisters let you see the work — and the water —
+                in real time. No mystery. No compromise.
+            </p>
         </div>
     </section>
 
@@ -692,6 +710,21 @@
         </div>
     </section>
 
+    <!-- Water Moment — pure-water closeup, third 3D moment -->
+    <section class="moment moment--right" id="moment-pure" aria-label="Closeup of pure, flowing water">
+        <div class="moment__stage" aria-hidden="true">
+            <canvas id="pure-canvas" aria-label="3D closeup of pure, flowing water"></canvas>
+        </div>
+        <div class="moment__caption">
+            <p class="moment__eyebrow">99.9% pure.</p>
+            <h2 class="moment__title">The water, at the end of the line.</h2>
+            <p class="moment__body">
+                After seven stages of filtration, what reaches your glass
+                is the only thing it should be: water.
+            </p>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section class="section contact" id="contact">
         <div class="container">
@@ -1049,7 +1082,12 @@
 
     <!-- 3D / WebGL modules (Three.js, vendored in /vendor) -->
     <script type="module" src="js/scene3d.js"></script>
-    <script type="module" src="js/ui3d.js"></script>
+
+    <!-- Smooth scroll + scroll narrative (Lenis + GSAP ScrollTrigger) -->
+    <script src="vendor/lenis/lenis.min.js" defer></script>
+    <script src="vendor/gsap/gsap.min.js" defer></script>
+    <script src="vendor/gsap/ScrollTrigger.min.js" defer></script>
+    <script src="js/ui3d.js" defer></script>
 
 </body>
 </html>
